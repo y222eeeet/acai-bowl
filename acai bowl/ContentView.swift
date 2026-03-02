@@ -187,6 +187,7 @@ struct ContentView: View {
 }
 
 struct RootTabView: View {
+    @Environment(\.scenePhase) private var scenePhase
     @State private var selectedTab: Int = 1
     @StateObject private var horoscopeStore = HoroscopeTranslationStore()
     @AppStorage("selectedZodiac") private var selectedZodiacRaw: String = ZodiacSign.aries.rawValue
@@ -215,6 +216,22 @@ struct RootTabView: View {
         .task {
             await horoscopeStore.load()
             updateWidgetAfterLoad()
+        }
+        .onChange(of: scenePhase) { _, newPhase in
+            if newPhase == .active {
+                Task { await horoscopeStore.load(); updateWidgetAfterLoad() }
+            }
+        }
+        .task(id: scenePhase) {
+            guard scenePhase == .active else { return }
+            while !Task.isCancelled {
+                try? await Task.sleep(for: .seconds(60 * 15))
+                guard !Task.isCancelled else { break }
+                if HoroscopeAPI.isPastCrawlTimeKST {
+                    await horoscopeStore.load()
+                    updateWidgetAfterLoad()
+                }
+            }
         }
         .onChange(of: selectedZodiacRaw) { _, _ in
             updateWidgetAfterLoad()

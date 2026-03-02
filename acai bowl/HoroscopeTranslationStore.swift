@@ -28,7 +28,7 @@ final class HoroscopeTranslationStore: ObservableObject {
         self.payload = dummyPayload
     }
 
-    /// 한국어 번역본(_kr.json) 로드. 없으면 번역 서버(HoroscopeTranslateURL)로 일본어 전송 후 한국어 수신.
+    /// 한국어 번역본(_kr.json) 로드. KST 기준. 6:30 이전이면 어제 데이터로 폴백.
     func load() async {
         guard !isLoading else { return }
         isLoading = true
@@ -40,6 +40,14 @@ final class HoroscopeTranslationStore: ObservableObject {
             payload = kr
             return
         } catch {}
+
+        if !HoroscopeAPI.isPastCrawlTimeKST {
+            do {
+                let kr = try await HoroscopeAPI.shared.fetchKorean(for: HoroscopeAPI.yesterdayDateKST)
+                payload = kr
+                return
+            } catch {}
+        }
 
         do {
             let jp = try await HoroscopeAPI.shared.fetchTodayJapanese()
