@@ -1,0 +1,53 @@
+# 매일 6:30 KST 별자리 운세 크롤링 + GPT 번역 → data/ 커밋
+# OPENAI_API_KEY는 GitHub Secrets에 등록 필요 (Settings → Secrets and variables → Actions)
+
+name: Horoscope Daily Crawl
+
+on:
+  schedule:
+    # 6:30 AM KST = 21:30 UTC (전날)
+    - cron: "30 21 * * *"
+  workflow_dispatch:  # 수동 실행 가능
+
+env:
+  TZ: Asia/Seoul  # date.today()가 한국 날짜 기준으로 동작
+
+jobs:
+  crawl:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write  # data/ 커밋 푸시용
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: pip install -r scripts/requirements.txt
+
+      - name: Run crawler
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+        run: |
+          if [ -z "$OPENAI_API_KEY" ]; then
+            echo "::error::OPENAI_API_KEY 시크릿이 없습니다. Repo Settings → Secrets → Actions에서 등록해 주세요."
+            exit 1
+          fi
+          python3 scripts/horoscope_crawler.py --output data
+
+      - name: Commit and push data
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add data/*.json
+          if git diff --staged --quiet; then
+            echo "No changes to commit."
+          else
+            git commit -m "chore: daily horoscope data $(date +%Y-%m-%d)"
+            git push
+          fi
