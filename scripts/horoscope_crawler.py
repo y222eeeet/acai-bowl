@@ -243,7 +243,7 @@ def _gpt_translate_one_item(item: HoroscopeItem) -> Optional[HoroscopeItem]:
         return None
     prompt = """다음은 일본어 별자리 운세 한 건입니다. 다음 두 가지를 수행해 주세요.
 
-1) 전체를 자연스러운 한국어로 번역해 주세요. 문체는 해요체(존댓말)로 통일하고, 문장은 마침표 뒤에 공백을 넣어 구분해 주세요. 문장 끝은 항상 ~요/~예요/~이에요처럼 존댓말로 쓰고, ~야, ~이야 등 반말은 절대 사용하지 마세요.
+1) 전체를 자연스러운 한국어로 번역해 주세요. 문체는 해요체(존댓말)로 통일하고, 문장은 마침표 뒤에 공백을 넣어 구분해 주세요. 모든 문장 끝에 반드시 마침표(.)를 붙여 주세요. 문장 끝은 항상 ~요/~예요/~이에요처럼 존댓말로 쓰고, ~야, ~이야 등 반말은 절대 사용하지 마세요.
 2) 상세 운세(detail) 내용을 반영한 "한줄평" 한 문장을 만들어 주세요. 20자 내외만, 반드시 "~요"로 끝나게 해 주세요.
 
 아래 JSON 형식으로만 응답해 주세요.
@@ -275,7 +275,7 @@ def _gpt_translate_one_item(item: HoroscopeItem) -> Optional[HoroscopeItem]:
         lucky_item = (data.get("luckyItem") or "").strip()
         if not detail:
             return None
-        detail = _normalize_space_after_period(detail)
+        detail = _ensure_period_at_end(_normalize_space_after_period(detail))
         short_msg = _short_message_20(short_msg) or "좋은 하루 되세요."
         lucky_color = _normalize_lucky(lucky_color)
         lucky_item = _normalize_lucky(lucky_item)
@@ -298,7 +298,7 @@ def _gpt_translate_one_item(item: HoroscopeItem) -> Optional[HoroscopeItem]:
 
 
 # 배치용 짧은 지시문
-_BATCH_PROMPT_PREFIX = """12개 일본어 별자리 운세를 한국어로 번역. 해요체(존댓말). 문장 끝은 항상 ~요/~예요/~이에요, ~야/~이야 등 반말은 절대 사용하지 않기. 문장 구분은 마침표 뒤 공백.
+_BATCH_PROMPT_PREFIX = """12개 일본어 별자리 운세를 한국어로 번역. 해요체(존댓말). 모든 문장 끝에 반드시 마침표(.) 붙이기. ~야/~이야 등 반말은 절대 사용하지 않기. 문장 구분은 마침표 뒤 공백.
 각 항목별 한줄평은 20자 내외 한 문장만, 반드시 ~요로 끝내기.
 응답은 반드시 아래 JSON만 출력 (순서 유지):
 {"items":[{"detail":"...","shortMessage":"...","luckyColor":"...","luckyItem":"..."}, ...]}
@@ -313,6 +313,16 @@ def _normalize_space_after_period(text: str) -> str:
     if not text:
         return text
     return re.sub(r"\.([^\s])", r". \1", text)
+
+
+def _ensure_period_at_end(text: str) -> str:
+    """문장 끝이 . ! ? 가 아니면 . 추가."""
+    if not text or not text.strip():
+        return text
+    s = text.strip()
+    if s and s[-1] not in ".!?。！？":
+        s = s + "."
+    return s
 
 
 def _fix_double_yo(text: str) -> str:
@@ -338,7 +348,7 @@ def _short_message_20(s: str, max_len: int = 20) -> str:
         first = first[:max_len].rstrip()
     if not first.endswith("요"):
         first = first.rstrip(".") + "해요"
-    return first[: max_len + 2].rstrip()
+    return _ensure_period_at_end(first[: max_len + 2].rstrip())
 
 
 def _normalize_lucky(value: str) -> str:
@@ -394,7 +404,7 @@ def _gpt_translate_batch(items: List[HoroscopeItem]) -> Optional[List[HoroscopeI
             if not detail:
                 result.append(orig)
                 continue
-            detail = _normalize_space_after_period(detail)
+            detail = _ensure_period_at_end(_normalize_space_after_period(detail))
             short_msg = _short_message_20((o.get("shortMessage") or "").strip())
             if not short_msg:
                 short_msg = "좋은 하루 되세요."

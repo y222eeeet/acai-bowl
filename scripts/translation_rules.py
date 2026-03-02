@@ -200,6 +200,16 @@ def normalize_sentence_spacing(text: str) -> str:
     return s.strip()
 
 
+def ensure_sentences_end_with_period(text: str) -> str:
+    """모든 문장이 마침표로 끝나도록 보정. 끝에 . ! ? 가 없으면 . 추가."""
+    if not text or not text.strip():
+        return text
+    s = text.strip()
+    if s and s[-1] not in ".!?。！？":
+        s = s + "."
+    return s
+
+
 def apply_all_post_process(text: str) -> str:
     """
     번역된 한국어에 규칙을 순서대로 적용.
@@ -207,7 +217,7 @@ def apply_all_post_process(text: str) -> str:
     2. 문법·어미
     3. 문체 통일
     4. 문장 띄어쓰기
-    (문체 통일 후 추가로 문장 끝 보정은 crawler의 _ensure_yo_style_endings에서 수행)
+    5. 문장 끝 마침표
     """
     if not text or not text.strip():
         return text
@@ -216,4 +226,5 @@ def apply_all_post_process(text: str) -> str:
     s = apply_grammar(s)
     s = apply_style(s)
     s = normalize_sentence_spacing(s)
+    s = ensure_sentences_end_with_period(s)
     return s

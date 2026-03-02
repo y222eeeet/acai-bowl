@@ -189,6 +189,7 @@ struct ContentView: View {
 struct RootTabView: View {
     @State private var selectedTab: Int = 1
     @StateObject private var horoscopeStore = HoroscopeTranslationStore()
+    @AppStorage("selectedZodiac") private var selectedZodiacRaw: String = ZodiacSign.aries.rawValue
 
     var body: some View {
         TabView(selection: $selectedTab) {
@@ -213,6 +214,25 @@ struct RootTabView: View {
         .environmentObject(horoscopeStore)
         .task {
             await horoscopeStore.load()
+            updateWidgetAfterLoad()
+        }
+        .onChange(of: selectedZodiacRaw) { _, _ in
+            updateWidgetAfterLoad()
+        }
+    }
+
+    private func updateWidgetAfterLoad() {
+        let sign = ZodiacSign(rawValue: selectedZodiacRaw) ?? .aries
+        if let horoscope = horoscopeStore.payload.items.first(where: { $0.sign == sign }) {
+            WidgetDataManager.update(
+                selectedZodiac: selectedZodiacRaw,
+                zodiacEmoji: horoscope.sign.emoji,
+                rank: horoscope.rank,
+                shortMessage: horoscope.shortMessage,
+                detail: horoscope.detail
+            )
+        } else {
+            WidgetDataManager.updateSelectedZodiacOnly(selectedZodiacRaw)
         }
     }
 }
@@ -293,6 +313,12 @@ struct TodayHoroscopeView: View {
                     .padding()
                 }
                 .navigationTitle("오늘의 운세")
+                .onAppear { updateWidgetData(horoscope: horoscope) }
+                .onChange(of: selectedZodiacRaw) { _, _ in
+                    if let h = payload.items.first(where: { $0.sign == selectedSign }) {
+                        updateWidgetData(horoscope: h)
+                    }
+                }
             } else {
                 VStack(spacing: 16) {
                     Text("오늘 운세 데이터를 찾지 못했어요.")
@@ -303,6 +329,16 @@ struct TodayHoroscopeView: View {
                 .padding()
             }
         }
+    }
+
+    private func updateWidgetData(horoscope: DailyHoroscope) {
+        WidgetDataManager.update(
+            selectedZodiac: selectedZodiacRaw,
+            zodiacEmoji: horoscope.sign.emoji,
+            rank: horoscope.rank,
+            shortMessage: horoscope.shortMessage,
+            detail: horoscope.detail
+        )
     }
 
     private func header(horoscope: DailyHoroscope) -> some View {
@@ -360,9 +396,12 @@ struct TodayHoroscopeView: View {
                     Text("행운 컬러")
                         .font(.subheadline)
                         .foregroundColor(.secondary)
-                    Text(horoscope.luckyColor)
-                        .font(.body)
-                        .foregroundColor(colorFromName(horoscope.luckyColor) ?? .primary)
+                    HStack(spacing: 8) {
+                        luckyColorSwatch(horoscope.luckyColor)
+                        Text(horoscope.luckyColor)
+                            .font(.body)
+                            .foregroundColor(.primary)
+                    }
                 }
                 Spacer()
                 VStack(alignment: .trailing) {
@@ -409,6 +448,34 @@ private func scoreItem(label: String, emoji: String, score: Int) -> some View {
     }
 }
 
+/// 밝은 색(흰색, 베이지 등)인지. 흰 배경에서 테두리 필요 여부 판단.
+private func isLightColor(_ name: String) -> Bool {
+    let n = name.trimmingCharacters(in: .whitespaces).lowercased()
+    switch n {
+    case "흰색", "화이트", "white",
+         "베이지", "beige",
+         "은색", "실버", "silver",
+         "민트", "mint",
+         "하늘색", "스카이블루", "sky", "light blue", "물색", "水色":
+        return true
+    default:
+        return false
+    }
+}
+
+/// 행운 컬러 스워치(작은 색상 박스). 밝은 색은 테두리로 구분.
+@ViewBuilder
+private func luckyColorSwatch(_ name: String) -> some View {
+    let color = colorFromName(name) ?? .gray
+    RoundedRectangle(cornerRadius: 4)
+        .fill(color)
+        .frame(width: 20, height: 20)
+        .overlay(
+            RoundedRectangle(cornerRadius: 4)
+                .stroke(isLightColor(name) ? Color.gray.opacity(0.6) : .clear, lineWidth: 1)
+        )
+}
+
 /// 행운 컬러 이름(한국어/영어)을 SwiftUI Color로 변환. 매칭되지 않으면 nil.
 private func colorFromName(_ name: String) -> Color? {
     let n = name.trimmingCharacters(in: .whitespaces).lowercased()
@@ -432,32 +499,54 @@ private func colorFromName(_ name: String) -> Color? {
     case "민트", "mint": return Color(red: 0.6, green: 1, blue: 0.8)
     case "청록", "티얼", "teal": return Color(red: 0, green: 0.5, blue: 0.5)
     case "코랄", "coral": return Color(red: 1, green: 0.5, blue: 0.31)
+    case "하늘색", "스카이블루", "물색": return Color(red: 0.53, green: 0.81, blue: 0.98)
     default: return nil
     }
 }
 
 // MARK: - 탭 3: 설정
 
+/// 알림 시간 표시 라벨 (분 단위 → 문자열)
+private func notificationTimeLabel(minutes: Int) -> String {
+    let h = minutes / 60
+    let m = minutes % 60
+    if h == 12 && m == 0 { return "오후 12시" }
+    let hour12 = h == 12 ? 12 : (h % 12)
+    let period = h >= 12 ? "오후" : "오전"
+    if m == 0 {
+        return "\(period) \(hour12)시"
+    } else {
+        return "\(period) \(hour12)시 \(m)분"
+    }
+}
+
+private let notificationHourOptions = [7, 8, 9, 10, 11, 12]
+private let notificationMinuteOptions = [0, 30]
+
+private func hourLabel(_ h: Int) -> String {
+    if h == 12 { return "오후 12시" }
+    return h >= 12 ? "오후 \(h % 12)시" : "오전 \(h)시"
+}
+
+private func minuteLabel(_ m: Int) -> String {
+    m == 0 ? "00분" : "\(m)분"
+}
+
 struct SettingsView: View {
     @AppStorage("selectedZodiac") private var selectedZodiacRaw: String = ZodiacSign.aries.rawValue
     @AppStorage("notificationsEnabled") private var notificationsEnabled: Bool = false
-    /// 24시간 기준 7 = 오전 7시, 21 = 오후 9시 (오전 7시 ~ 오후 9시만 허용)
-    @AppStorage("notificationHour") private var notificationHour: Int = 7
-    @State private var notificationHourUI: Int = 7
+    /// 분 단위 저장 (420=7:00, 450=7:30, ... 720=12:00). 구버전 호환: 7~21이면 해당 시 * 60으로 해석
+    @AppStorage("notificationMinutes") private var notificationMinutes: Int = 420
+    @State private var selectedHour: Int = 7
+    @State private var selectedMinute: Int = 0
+    @State private var isTimePickerExpanded: Bool = false
 
-    private static let notificationHourMin = 7   // 오전 7시
-    private static let notificationHourMax = 21  // 오후 9시
+    private func minutesFromHourMinute() -> Int {
+        selectedHour * 60 + selectedMinute
+    }
 
     private var currentSign: ZodiacSign {
         ZodiacSign(rawValue: selectedZodiacRaw) ?? .aries
-    }
-
-    private var formattedNotificationTime: String {
-        let hour = min(max(notificationHourUI, Self.notificationHourMin), Self.notificationHourMax)
-        let isPM = hour >= 12
-        let hour12 = ((hour + 11) % 12) + 1
-        let period = isPM ? "오후" : "오전"
-        return "\(period) \(hour12)시"
     }
 
     var body: some View {
@@ -478,16 +567,53 @@ struct SettingsView: View {
                         Text("아침 운세 알림 받기")
                     }
 
-                    Picker("알림 시간", selection: $notificationHourUI) {
-                        ForEach(Self.notificationHourMin...Self.notificationHourMax, id: \.self) { hour in
-                            Text(label(for: hour))
-                                .tag(hour)
+                    Button {
+                        withAnimation(.easeInOut(duration: 0.2)) {
+                            isTimePickerExpanded.toggle()
+                        }
+                    } label: {
+                        HStack {
+                            Text("알림 시간")
+                            Spacer()
+                            Text(notificationTimeLabel(minutes: minutesFromHourMinute()))
+                                .foregroundColor(.blue)
+                            Image(systemName: "chevron.up")
+                                .font(.caption.weight(.semibold))
+                                .foregroundColor(.blue.opacity(0.5))
+                                .rotationEffect(.degrees(isTimePickerExpanded ? 0 : 180))
                         }
                     }
-                    .pickerStyle(.menu)
                     .disabled(!notificationsEnabled)
-                    .onChange(of: notificationHourUI) { newValue in
-                        notificationHour = min(max(newValue, Self.notificationHourMin), Self.notificationHourMax)
+                    .buttonStyle(.plain)
+
+                    if isTimePickerExpanded {
+                        HStack(spacing: 0) {
+                            Picker("시", selection: $selectedHour) {
+                                ForEach(notificationHourOptions, id: \.self) { h in
+                                    Text(hourLabel(h))
+                                        .tag(h)
+                                }
+                            }
+                            .pickerStyle(.wheel)
+                            .frame(maxWidth: .infinity)
+                            .clipped()
+
+                            Picker("분", selection: $selectedMinute) {
+                                ForEach(selectedHour == 12 ? [0] : notificationMinuteOptions, id: \.self) { m in
+                                    Text(minuteLabel(m))
+                                        .tag(m)
+                                }
+                            }
+                            .pickerStyle(.wheel)
+                            .frame(maxWidth: .infinity)
+                            .clipped()
+                        }
+                        .frame(height: 140)
+                        .onChange(of: selectedHour) { newHour in
+                            if newHour == 12 { selectedMinute = 0 }
+                            notificationMinutes = minutesFromHourMinute()
+                        }
+                        .onChange(of: selectedMinute) { _ in notificationMinutes = minutesFromHourMinute() }
                     }
 
                     Text("""
@@ -530,23 +656,33 @@ struct SettingsView: View {
             }
             .navigationTitle("설정")
             .onAppear {
-                notificationHourUI = min(max(notificationHour, Self.notificationHourMin), Self.notificationHourMax)
+                var mins = notificationMinutes
+                if UserDefaults.standard.object(forKey: "notificationMinutes") == nil,
+                   let oldHour = UserDefaults.standard.object(forKey: "notificationHour") as? Int,
+                   (7...21).contains(oldHour) {
+                    mins = oldHour * 60
+                    notificationMinutes = mins
+                }
+                if !(420...720).contains(mins) || mins % 30 != 0 {
+                    mins = 420
+                    notificationMinutes = mins
+                }
+                selectedHour = mins / 60
+                selectedMinute = mins % 60
+                if !notificationHourOptions.contains(selectedHour) {
+                    selectedHour = 7
+                }
+                if !notificationMinuteOptions.contains(selectedMinute) {
+                    selectedMinute = 0
+                }
             }
         }
-    }
-
-    private func label(for hour: Int) -> String {
-        let h = min(max(hour, Self.notificationHourMin), Self.notificationHourMax)
-        let isPM = h >= 12
-        let hour12 = ((h + 11) % 12) + 1
-        let period = isPM ? "오후" : "오전"
-        return "\(period) \(hour12)시"
     }
 }
 
 // MARK: - 공용 상세 뷰
 
-/// 상세 운세 문장 배열 (마침표·공백 기준으로 분리)
+/// 상세 운세 문장 배열 (마침표·공백 기준으로 분리, 각 문장 끝에 마침표 포함)
 private func detailSentences(from detail: String) -> [String] {
     let trimmed = detail.trimmingCharacters(in: .whitespacesAndNewlines)
     guard !trimmed.isEmpty else { return [] }
@@ -554,6 +690,7 @@ private func detailSentences(from detail: String) -> [String] {
     return parts
         .map { $0.trimmingCharacters(in: .whitespacesAndNewlines) }
         .filter { !$0.isEmpty }
+        .map { line in line.hasSuffix(".") || line.hasSuffix("!") || line.hasSuffix("?") ? line : line + "." }
 }
 
 struct HoroscopeDetailView: View {
@@ -611,9 +748,12 @@ struct HoroscopeDetailView: View {
                             Text("행운 컬러")
                                 .font(.subheadline)
                                 .foregroundColor(.secondary)
-                            Text(horoscope.luckyColor)
-                                .font(.body)
-                                .foregroundColor(colorFromName(horoscope.luckyColor) ?? .primary)
+                            HStack(spacing: 8) {
+                                luckyColorSwatch(horoscope.luckyColor)
+                                Text(horoscope.luckyColor)
+                                    .font(.body)
+                                    .foregroundColor(.primary)
+                            }
                         }
                         Spacer()
                         VStack(alignment: .trailing) {

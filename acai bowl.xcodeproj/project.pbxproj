@@ -6,12 +6,65 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		E23B62662F55B47A00A49367 /* WidgetKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E23B62652F55B47A00A49367 /* WidgetKit.framework */; };
+		E23B62682F55B47A00A49367 /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E23B62672F55B47A00A49367 /* SwiftUI.framework */; };
+		E23B62792F55B47B00A49367 /* acai bowl WidgetExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = E23B62632F55B47A00A49367 /* acai bowl WidgetExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		E2DBD2E92F542B5A000D03E0 /* data in Resources */ = {isa = PBXBuildFile; fileRef = E2DBD2E82F542B5A000D03E0 /* data */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		E23B62772F55B47B00A49367 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = E2DBD2D02F542B57000D03E0 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = E23B62622F55B47A00A49367;
+			remoteInfo = "acai bowl WidgetExtension";
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		E23B627A2F55B47B00A49367 /* Embed Foundation Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				E23B62792F55B47B00A49367 /* acai bowl WidgetExtension.appex in Embed Foundation Extensions */,
+			);
+			name = "Embed Foundation Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
 /* Begin PBXFileReference section */
+		E23B62632F55B47A00A49367 /* acai bowl WidgetExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = "acai bowl WidgetExtension.appex"; sourceTree = BUILT_PRODUCTS_DIR; };
+		E23B62652F55B47A00A49367 /* WidgetKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WidgetKit.framework; path = System/Library/Frameworks/WidgetKit.framework; sourceTree = SDKROOT; };
+		E23B62672F55B47A00A49367 /* SwiftUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftUI.framework; path = System/Library/Frameworks/SwiftUI.framework; sourceTree = SDKROOT; };
+		E23B62812F55B97000A49367 /* acai bowl WidgetExtension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "acai bowl WidgetExtension.entitlements"; sourceTree = "<group>"; };
 		E2DBD2D82F542B57000D03E0 /* acai bowl.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "acai bowl.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		E2DBD2E82F542B5A000D03E0 /* data */ = {isa = PBXFileReference; lastKnownFileType = folder; path = data; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		E23B627D2F55B47B00A49367 /* Exceptions for "acai bowl Widget" folder in "acai bowl WidgetExtension" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = E23B62622F55B47A00A49367 /* acai bowl WidgetExtension */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
 /* Begin PBXFileSystemSynchronizedRootGroup section */
+		E23B62692F55B47A00A49367 /* acai bowl Widget */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				E23B627D2F55B47B00A49367 /* Exceptions for "acai bowl Widget" folder in "acai bowl WidgetExtension" target */,
+			);
+			path = "acai bowl Widget";
+			sourceTree = "<group>";
+		};
 		E2DBD2DA2F542B57000D03E0 /* acai bowl */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			path = "acai bowl";
@@ -20,6 +73,15 @@
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		E23B62602F55B47A00A49367 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				E23B62682F55B47A00A49367 /* SwiftUI.framework in Frameworks */,
+				E23B62662F55B47A00A49367 /* WidgetKit.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		E2DBD2D52F542B57000D03E0 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -29,16 +91,24 @@
 		};
 /* End PBXFrameworksBuildPhase section */
 
-/* Begin PBXBuildFile section */
-		E2DBD2E92F542B5A000D03E0 /* data in Resources */ = {isa = PBXBuildFile; fileRef = E2DBD2E82F542B5A000D03E0 /* data */; };
-/* End PBXBuildFile section */
-
 /* Begin PBXGroup section */
+		E23B62642F55B47A00A49367 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				E23B62652F55B47A00A49367 /* WidgetKit.framework */,
+				E23B62672F55B47A00A49367 /* SwiftUI.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 		E2DBD2CF2F542B57000D03E0 = {
 			isa = PBXGroup;
 			children = (
+				E23B62812F55B97000A49367 /* acai bowl WidgetExtension.entitlements */,
 				E2DBD2DA2F542B57000D03E0 /* acai bowl */,
 				E2DBD2E82F542B5A000D03E0 /* data */,
+				E23B62692F55B47A00A49367 /* acai bowl Widget */,
+				E23B62642F55B47A00A49367 /* Frameworks */,
 				E2DBD2D92F542B57000D03E0 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -47,6 +117,7 @@
 			isa = PBXGroup;
 			children = (
 				E2DBD2D82F542B57000D03E0 /* acai bowl.app */,
+				E23B62632F55B47A00A49367 /* acai bowl WidgetExtension.appex */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -54,6 +125,28 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
+		E23B62622F55B47A00A49367 /* acai bowl WidgetExtension */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = E23B627E2F55B47B00A49367 /* Build configuration list for PBXNativeTarget "acai bowl WidgetExtension" */;
+			buildPhases = (
+				E23B625F2F55B47A00A49367 /* Sources */,
+				E23B62602F55B47A00A49367 /* Frameworks */,
+				E23B62612F55B47A00A49367 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				E23B62692F55B47A00A49367 /* acai bowl Widget */,
+			);
+			name = "acai bowl WidgetExtension";
+			packageProductDependencies = (
+			);
+			productName = "acai bowl WidgetExtension";
+			productReference = E23B62632F55B47A00A49367 /* acai bowl WidgetExtension.appex */;
+			productType = "com.apple.product-type.app-extension";
+		};
 		E2DBD2D72F542B57000D03E0 /* acai bowl */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = E2DBD2E32F542B58000D03E0 /* Build configuration list for PBXNativeTarget "acai bowl" */;
@@ -61,10 +154,12 @@
 				E2DBD2D42F542B57000D03E0 /* Sources */,
 				E2DBD2D52F542B57000D03E0 /* Frameworks */,
 				E2DBD2D62F542B57000D03E0 /* Resources */,
+				E23B627A2F55B47B00A49367 /* Embed Foundation Extensions */,
 			);
 			buildRules = (
 			);
 			dependencies = (
+				E23B62782F55B47B00A49367 /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
 				E2DBD2DA2F542B57000D03E0 /* acai bowl */,
@@ -86,6 +181,9 @@
 				LastSwiftUpdateCheck = 2630;
 				LastUpgradeCheck = 2630;
 				TargetAttributes = {
+					E23B62622F55B47A00A49367 = {
+						CreatedOnToolsVersion = 26.3;
+					};
 					E2DBD2D72F542B57000D03E0 = {
 						CreatedOnToolsVersion = 26.3;
 					};
@@ -106,11 +204,19 @@
 			projectRoot = "";
 			targets = (
 				E2DBD2D72F542B57000D03E0 /* acai bowl */,
+				E23B62622F55B47A00A49367 /* acai bowl WidgetExtension */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
+		E23B62612F55B47A00A49367 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		E2DBD2D62F542B57000D03E0 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -122,6 +228,13 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		E23B625F2F55B47A00A49367 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		E2DBD2D42F542B57000D03E0 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -131,7 +244,77 @@
 		};
 /* End PBXSourcesBuildPhase section */
 
+/* Begin PBXTargetDependency section */
+		E23B62782F55B47B00A49367 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = E23B62622F55B47A00A49367 /* acai bowl WidgetExtension */;
+			targetProxy = E23B62772F55B47B00A49367 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
 /* Begin XCBuildConfiguration section */
+		E23B627B2F55B47B00A49367 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
+				CODE_SIGN_ENTITLEMENTS = "acai bowl WidgetExtension.entitlements";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = KN5NQM9FL3;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "acai bowl Widget/Info.plist";
+				INFOPLIST_KEY_CFBundleDisplayName = "acai bowl Widget";
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "jiwooseo.acai-bowl.acai-bowl-Widget";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		E23B627C2F55B47B00A49367 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
+				CODE_SIGN_ENTITLEMENTS = "acai bowl WidgetExtension.entitlements";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = KN5NQM9FL3;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "acai bowl Widget/Info.plist";
+				INFOPLIST_KEY_CFBundleDisplayName = "acai bowl Widget";
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "jiwooseo.acai-bowl.acai-bowl-Widget";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
 		E2DBD2E12F542B58000D03E0 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -256,8 +439,10 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = "acai bowl/acai bowl.entitlements";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = KN5NQM9FL3;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
@@ -287,8 +472,10 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = "acai bowl/acai bowl.entitlements";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = KN5NQM9FL3;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
@@ -316,6 +503,15 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		E23B627E2F55B47B00A49367 /* Build configuration list for PBXNativeTarget "acai bowl WidgetExtension" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				E23B627B2F55B47B00A49367 /* Debug */,
+				E23B627C2F55B47B00A49367 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		E2DBD2D32F542B57000D03E0 /* Build configuration list for PBXProject "acai bowl" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
