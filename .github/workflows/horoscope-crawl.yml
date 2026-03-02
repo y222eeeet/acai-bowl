@@ -1,13 +1,13 @@
 # 매일 6:30 KST 별자리 운세 크롤링 + GPT 번역 → data/ 커밋
-# OPENAI_API_KEY는 GitHub Secrets에 등록 필요 (Settings → Secrets and variables → Actions)
+# cron-job.org가 repository_dispatch로 정각에 트리거 (GitHub schedule 대신)
+# OPENAI_API_KEY: GitHub Secrets, GITHUB_PAT: cron-job.org용 (선택)
 
 name: Horoscope Daily Crawl
 
 on:
-  schedule:
-    # 4:18 PM KST = 7:18 UTC (부하 적은 시간대 테스트)
-    - cron: "18 7 * * *"
-  workflow_dispatch:  # 수동 실행 가능
+  repository_dispatch:
+    types: [daily-crawl]
+  workflow_dispatch:
 
 env:
   TZ: Asia/Seoul  # date.today()가 한국 날짜 기준으로 동작
