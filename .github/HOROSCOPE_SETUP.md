@@ -33,33 +33,32 @@ cron-job.org가 repository_dispatch를 호출하려면 PAT 필요.
 
 1. https://cron-job.org 가입 (무료)
 2. **Create cronjob** 클릭
-3. 아래 값 입력:
+3. **COMMON** 탭: Title `acai-bowl horoscope`, URL `https://api.github.com/repos/y222eeeet/acai-bowl/dispatches`, Schedule 매일 06:30
+4. **ADVANCED** 탭에서 아래 입력
+
+### ADVANCED 탭
 
 | 항목 | 값 |
 |------|-----|
-| **Title** | acai-bowl horoscope |
-| **URL** | `https://api.github.com/repos/y222eeeet/acai-bowl/dispatches` |
-| **Request method** | `POST` |
-| **Schedule** | Every day, 06:30 (또는 Custom → Cron: `30 6 * * *`) |
+| **Requires HTTP authentication** | OFF (끄기) |
 | **Time zone** | `Asia/Seoul` |
+| **Request method** | `POST` |
+| **Request body** | `{"event_type": "daily-crawl"}` |
+| **Timeout** | `30` (기본값 유지) |
+| **Treat redirects as success** | OFF (끄기) |
 
-4. **Request headers** 섹션에서 Add header:
+### Headers (+ ADD로 4개 추가)
 
-| Name | Value |
-|------|-------|
-| `Authorization` | `Bearer 여기에_PAT_붙여넣기` |
+| Key | Value |
+|-----|-------|
+| `Authorization` | `Bearer ghp_여기에PAT붙여넣기` |
 | `Accept` | `application/vnd.github+json` |
+| `Content-Type` | `application/json` |
 | `X-GitHub-Api-Version` | `2022-11-28` |
 
-> Classic PAT도 `Bearer ghp_xxxx` 사용 가능 (최신 GitHub API)
+> Request body에 JSON을 사용하므로 **Content-Type** 헤더 필요. 화면에서 "ADD CONTENT-TYPE HEADER NOW" 버튼으로 추가해도 됨.
 
-5. **Request body** (Body type: `JSON`):
-
-```json
-{"event_type": "daily-crawl"}
-```
-
-6. **Create cronjob** 저장
+5. **Create cronjob** 저장
 
 ---
 
