@@ -5,8 +5,8 @@ name: Horoscope Daily Crawl
 
 on:
   schedule:
-    # 테스트용: 2:00 PM KST = 5:00 UTC (확인 후 6:30 KST로 복원)
-    - cron: "0 5 * * *"
+    # 4:18 PM KST = 7:18 UTC (부하 적은 시간대 테스트)
+    - cron: "18 7 * * *"
   workflow_dispatch:  # 수동 실행 가능
 
 env:
