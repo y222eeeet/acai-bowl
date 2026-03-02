@@ -8,6 +8,7 @@
 
 /* Begin PBXFileReference section */
 		E2DBD2D82F542B57000D03E0 /* acai bowl.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "acai bowl.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		E2DBD2E82F542B5A000D03E0 /* data */ = {isa = PBXFileReference; lastKnownFileType = folder; path = data; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -28,11 +29,16 @@
 		};
 /* End PBXFrameworksBuildPhase section */
 
+/* Begin PBXBuildFile section */
+		E2DBD2E92F542B5A000D03E0 /* data in Resources */ = {isa = PBXBuildFile; fileRef = E2DBD2E82F542B5A000D03E0 /* data */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXGroup section */
 		E2DBD2CF2F542B57000D03E0 = {
 			isa = PBXGroup;
 			children = (
 				E2DBD2DA2F542B57000D03E0 /* acai bowl */,
+				E2DBD2E82F542B5A000D03E0 /* data */,
 				E2DBD2D92F542B57000D03E0 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -109,6 +115,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E2DBD2E92F542B5A000D03E0 /* data in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

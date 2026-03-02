@@ -1,0 +1,7 @@
+fastapi>=0.104.0
+uvicorn[standard]>=0.24.0
+openai>=1.0.0
+# 크롤러 모듈 의존성 (번역 로직 재사용)
+requests>=2.28.0
+beautifulsoup4>=4.11.0
+deep-translator>=1.11.0
