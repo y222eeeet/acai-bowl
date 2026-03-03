@@ -8,7 +8,24 @@
 import Foundation
 import UserNotifications
 
+/// 앱 포그라운드일 때도 알림 배너·소리를 표시하려면 델리게이트 설정 필요
+private final class NotificationDelegate: NSObject, UNUserNotificationCenterDelegate {
+    func userNotificationCenter(
+        _ center: UNUserNotificationCenter,
+        willPresent notification: UNNotification,
+        withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void
+    ) {
+        completionHandler([.banner, .sound, .list])
+    }
+}
+
 enum NotificationManager {
+    private static let _delegate = NotificationDelegate()
+
+    /// 앱 실행 시 한 번 호출. 포그라운드에서도 알림 표시하게 함
+    static func setupDelegate() {
+        UNUserNotificationCenter.current().delegate = _delegate
+    }
     static let horoscopeIdentifier = "horoscope-daily"
 
     /// 순위에 따른 알림 제목
@@ -68,13 +85,8 @@ enum NotificationManager {
         var mins = defaults.integer(forKey: "notificationMinutes")
         if mins < 420 || mins > 720 { mins = 420 }
 
-        var hour = mins / 60
-        var minute = mins % 60
-        #if DEBUG
-        hour = 15
-        minute = 13
-        #endif
-
+        let hour = mins / 60
+        let minute = mins % 60
         let tz = TimeZone(identifier: "Asia/Seoul") ?? .current
         var cal = Calendar(identifier: .gregorian)
         cal.timeZone = tz

@@ -49,13 +49,7 @@ final class HoroscopeTranslationStore: ObservableObject {
             } catch {}
         }
 
-        do {
-            let jp = try await HoroscopeAPI.shared.fetchTodayJapanese()
-            let kr = try await HoroscopeAPI.shared.fetchKoreanViaTranslate(japanesePayload: jp)
-            payload = kr
-        } catch {
-            loadError = error.localizedDescription
-            payload = dummyPayload
-        }
+        loadError = "데이터를 불러올 수 없어요."
+        payload = dummyPayload
     }
 }

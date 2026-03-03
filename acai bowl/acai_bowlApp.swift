@@ -9,6 +9,10 @@ import SwiftUI
 
 @main
 struct acai_bowlApp: App {
+    init() {
+        NotificationManager.setupDelegate()
+    }
+
     var body: some Scene {
         WindowGroup {
             ContentView()

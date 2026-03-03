@@ -573,6 +573,7 @@ struct SettingsView: View {
     @State private var selectedHour: Int = 7
     @State private var selectedMinute: Int = 0
     @State private var isTimePickerExpanded: Bool = false
+    @State private var isTestNotificationCooldown: Bool = false
 
     private func minutesFromHourMinute() -> Int {
         selectedHour * 60 + selectedMinute
@@ -602,6 +603,7 @@ struct SettingsView: View {
 
                     #if DEBUG
                     Button("🧪 5초 후 테스트 알림") {
+                        isTestNotificationCooldown = true
                         Task {
                             let sign = ZodiacSign(rawValue: selectedZodiacRaw) ?? .aries
                             let horoscope = horoscopeStore.payload.items.first { $0.sign == sign }
@@ -612,9 +614,11 @@ struct SettingsView: View {
                             } else {
                                 await NotificationManager.scheduleTestNotification()
                             }
+                            try? await Task.sleep(nanoseconds: 10_000_000_000)
+                            await MainActor.run { isTestNotificationCooldown = false }
                         }
                     }
-                    .disabled(!notificationsEnabled)
+                    .disabled(!notificationsEnabled || isTestNotificationCooldown)
                     #endif
 
                     Button {
