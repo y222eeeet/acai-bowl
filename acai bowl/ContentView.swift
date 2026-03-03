@@ -191,6 +191,8 @@ struct RootTabView: View {
     @State private var selectedTab: Int = 1
     @StateObject private var horoscopeStore = HoroscopeTranslationStore()
     @AppStorage("selectedZodiac") private var selectedZodiacRaw: String = ZodiacSign.aries.rawValue
+    @AppStorage("notificationsEnabled") private var notificationsEnabled: Bool = false
+    @AppStorage("notificationMinutes") private var notificationMinutes: Int = 420
 
     var body: some View {
         TabView(selection: $selectedTab) {
@@ -236,6 +238,13 @@ struct RootTabView: View {
         .onChange(of: selectedZodiacRaw) { _, _ in
             updateWidgetAfterLoad()
         }
+        .onChange(of: notificationsEnabled) { _, enabled in
+            if !enabled { NotificationManager.cancelScheduled() }
+            else { updateWidgetAfterLoad() }
+        }
+        .onChange(of: notificationMinutes) { _, _ in
+            updateWidgetAfterLoad()
+        }
     }
 
     private func updateWidgetAfterLoad() {
@@ -248,8 +257,13 @@ struct RootTabView: View {
                 shortMessage: horoscope.shortMessage,
                 detail: horoscope.detail
             )
+            NotificationManager.scheduleIfNeeded(
+                horoscope: (horoscope.sign.rawValue, horoscope.rank, horoscope.shortMessage),
+                payloadDate: horoscopeStore.payload.date
+            )
         } else {
             WidgetDataManager.updateSelectedZodiacOnly(selectedZodiacRaw)
+            NotificationManager.scheduleIfNeeded(horoscope: nil, payloadDate: horoscopeStore.payload.date)
         }
     }
 }
