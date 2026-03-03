@@ -68,8 +68,12 @@ enum NotificationManager {
         var mins = defaults.integer(forKey: "notificationMinutes")
         if mins < 420 || mins > 720 { mins = 420 }
 
-        let hour = mins / 60
-        let minute = mins % 60
+        var hour = mins / 60
+        var minute = mins % 60
+        #if DEBUG
+        hour = 15
+        minute = 13
+        #endif
 
         let tz = TimeZone(identifier: "Asia/Seoul") ?? .current
         var cal = Calendar(identifier: .gregorian)
@@ -111,4 +115,32 @@ enum NotificationManager {
     static func cancelScheduled() {
         UNUserNotificationCenter.current().removePendingNotificationRequests(withIdentifiers: [horoscopeIdentifier])
     }
+
+    #if DEBUG
+    /// 테스트: 5초 후 알림 발송. 시뮬레이터에서 동작 확인용.
+    static func scheduleTestNotification(
+        horoscope: (sign: String, rank: Int, shortMessage: String)? = nil
+    ) async {
+        let granted = await requestPermission()
+        guard granted else { return }
+
+        let content = UNMutableNotificationContent()
+        content.sound = .default
+        if let h = horoscope {
+            content.title = title(for: h.rank)
+            content.body = body(sign: h.sign, rank: h.rank, shortMessage: h.shortMessage)
+        } else {
+            content.title = "🧪 테스트 알림"
+            content.body = "5초 후 알림이 정상 동작합니다."
+        }
+
+        let trigger = UNTimeIntervalNotificationTrigger(timeInterval: 5, repeats: false)
+        let request = UNNotificationRequest(
+            identifier: "horoscope-test",
+            content: content,
+            trigger: trigger
+        )
+        try? await UNUserNotificationCenter.current().add(request)
+    }
+    #endif
 }

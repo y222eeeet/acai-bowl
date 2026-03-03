@@ -221,6 +221,7 @@ struct RootTabView: View {
         }
         .onChange(of: scenePhase) { _, newPhase in
             if newPhase == .active {
+                selectedTab = 1
                 Task { await horoscopeStore.load(); updateWidgetAfterLoad() }
             }
         }
@@ -564,6 +565,7 @@ private func minuteLabel(_ m: Int) -> String {
 }
 
 struct SettingsView: View {
+    @EnvironmentObject private var horoscopeStore: HoroscopeTranslationStore
     @AppStorage("selectedZodiac") private var selectedZodiacRaw: String = ZodiacSign.aries.rawValue
     @AppStorage("notificationsEnabled") private var notificationsEnabled: Bool = false
     /// 분 단위 저장 (420=7:00, 450=7:30, ... 720=12:00). 구버전 호환: 7~21이면 해당 시 * 60으로 해석
@@ -597,6 +599,23 @@ struct SettingsView: View {
                     Toggle(isOn: $notificationsEnabled) {
                         Text("아침 운세 알림 받기")
                     }
+
+                    #if DEBUG
+                    Button("🧪 5초 후 테스트 알림") {
+                        Task {
+                            let sign = ZodiacSign(rawValue: selectedZodiacRaw) ?? .aries
+                            let horoscope = horoscopeStore.payload.items.first { $0.sign == sign }
+                            if let h = horoscope {
+                                await NotificationManager.scheduleTestNotification(
+                                    horoscope: (h.sign.rawValue, h.rank, h.shortMessage)
+                                )
+                            } else {
+                                await NotificationManager.scheduleTestNotification()
+                            }
+                        }
+                    }
+                    .disabled(!notificationsEnabled)
+                    #endif
 
                     Button {
                         withAnimation(.easeInOut(duration: 0.2)) {
