@@ -1,4 +1,33 @@
 __pycache__/
+*.py[cod]
+*$py.class
+.Python
+*.so
 .env
 .env.local
+.env.*.local
 *.env
+!.env.example
+
+# Xcode
+xcuserdata/
+*.xcuserstate
+DerivedData/
+build/
+*.moved-aside
+*.pbxuser
+!default.pbxuser
+*.mode1v3
+!default.mode1v3
+*.mode2v3
+!default.mode2v3
+*.perspectivev3
+!default.perspectivev3
+
+# Secrets (추가 방어 - 절대 커밋 금지)
+*.pem
+*.key
+*.keystore
+credentials.json
+secrets.json
+config.local.*

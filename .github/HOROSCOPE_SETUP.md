@@ -51,7 +51,7 @@ cron-job.org가 repository_dispatch를 호출하려면 PAT 필요.
 
 | Key | Value |
 |-----|-------|
-| `Authorization` | `Bearer ghp_여기에PAT붙여넣기` |
+| `Authorization` | `Bearer ghp_xxxxxxxxxxxxxxxxxxxx` (여기에 실제 PAT 붙여넣기) |
 | `Accept` | `application/vnd.github+json` |
 | `Content-Type` | `application/json` |
 | `X-GitHub-Api-Version` | `2022-11-28` |
