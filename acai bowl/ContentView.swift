@@ -324,6 +324,7 @@ struct AllRankingView: View {
 struct TodayHoroscopeView: View {
     @AppStorage("selectedZodiac") private var selectedZodiacRaw: String = ZodiacSign.aries.rawValue
     @EnvironmentObject private var horoscopeStore: HoroscopeTranslationStore
+    @State private var emojiScale: CGFloat = 1.0
 
     private var selectedSign: ZodiacSign {
         ZodiacSign(rawValue: selectedZodiacRaw) ?? .aries
@@ -335,14 +336,25 @@ struct TodayHoroscopeView: View {
         NavigationStack {
             if let horoscope = payload.items.first(where: { $0.sign == selectedSign }) {
                 ScrollView {
-                    VStack(alignment: .leading, spacing: 16) {
-                        header(horoscope: horoscope)
+                    VStack(spacing: 0) {
+                        // 상단: 큰 중앙 이모지 (탭 시 진동)
+                        zodiacEmojiButton(emoji: horoscope.sign.emoji)
+                            .frame(maxWidth: .infinity)
+                            .padding(.vertical, 32)
+                            .padding(.horizontal, 24)
+
                         Divider()
-                        detailSection(horoscope: horoscope)
-                        Divider()
-                        luckySection(horoscope: horoscope)
+
+                        // 하단: 스크롤로 확인하는 운세 정보
+                        VStack(alignment: .leading, spacing: 16) {
+                            headerContent(horoscope: horoscope)
+                            Divider()
+                            detailSection(horoscope: horoscope)
+                            Divider()
+                            luckySection(horoscope: horoscope)
+                        }
+                        .padding()
                     }
-                    .padding()
                 }
                 .navigationTitle("오늘의 운세")
                 .onAppear { updateWidgetData(horoscope: horoscope) }
@@ -363,6 +375,26 @@ struct TodayHoroscopeView: View {
         }
     }
 
+    /// 중앙 이모지: 탭 시 진동 + 살짝 튀는 애니메이션
+    private func zodiacEmojiButton(emoji: String) -> some View {
+        Button {
+            UIImpactFeedbackGenerator(style: .light).impactOccurred()
+            withAnimation(.easeOut(duration: 0.1)) {
+                emojiScale = 1.15
+            }
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                withAnimation(.easeOut(duration: 0.15)) {
+                    emojiScale = 1.0
+                }
+            }
+        } label: {
+            Text(emoji)
+                .font(.system(size: 96))
+                .scaleEffect(emojiScale)
+        }
+        .buttonStyle(.plain)
+    }
+
     private func updateWidgetData(horoscope: DailyHoroscope) {
         WidgetDataManager.update(
             selectedZodiac: selectedZodiacRaw,
@@ -373,16 +405,13 @@ struct TodayHoroscopeView: View {
         )
     }
 
-    private func header(horoscope: DailyHoroscope) -> some View {
+    private func headerContent(horoscope: DailyHoroscope) -> some View {
         VStack(alignment: .leading, spacing: 8) {
             Text(formattedDate(horoscope.date))
                 .font(.subheadline)
                 .foregroundColor(.secondary)
 
             HStack(spacing: 12) {
-                Text(horoscope.sign.emoji)
-                    .font(.system(size: 48))
-
                 VStack(alignment: .leading, spacing: 4) {
                     Text(horoscope.sign.rawValue)
                         .font(.title2.bold())
@@ -390,6 +419,7 @@ struct TodayHoroscopeView: View {
                         .font(.headline)
                         .foregroundColor(.blue)
                 }
+                Spacer()
             }
 
             Text("한줄평")
